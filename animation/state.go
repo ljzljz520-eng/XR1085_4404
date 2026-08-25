@@ -32,7 +32,6 @@ func Click(state *domain.CandleAnimation) error {
 	}
 	observedStage := state.Stage
 	observedClicks := state.Clicks
-	observedLayers := state.Layers
 	invokeReadHook()
 	runtime.Gosched()
 	clickWriteMu.Lock()
@@ -48,10 +47,13 @@ func Click(state *domain.CandleAnimation) error {
 			state.Layers = 1
 			state.Clicks = observedClicks + 1
 		} else {
+			// A concurrent click already moved this layer off quiet.
+			// Brighten the single expanding layer instead of spawning a
+			// second one — multiple layers can never settle to quiet.
 			state.Stage = domain.StageExpand
 			state.Quiet = false
 			state.ParticleCount = 24
-			state.Layers = observedLayers + 1
+			state.Layers = 1
 			state.Clicks = observedClicks + 1
 		}
 		return nil
