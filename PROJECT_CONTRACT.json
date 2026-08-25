@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "metrics": {
+    "production_loc": 2307,
+    "production_files": 40,
+    "production_packages": 8,
+    "test_files": 10,
+    "production_functions": 210,
+    "decision_points": 351
+  },
+  "persistence": {
+    "module": "go.etcd.io/bbolt",
+    "entities": [
+      "MemorialMessage",
+      "CandleAnimation",
+      "DisplaySnapshot",
+      "VisitorSession"
+    ],
+    "reopen_test": "TestPersistenceSurvivesReopen"
+  },
+  "workflows": [
+    {
+      "steps": [
+        "Validate visitor and memorial message input",
+        "Create deterministic MemorialMessage and VisitorSession entities",
+        "Create a quiet CandleAnimation linked to the message",
+        "Render and persist the initial DisplaySnapshot bundle"
+      ],
+      "test": "TestWorkflowRecordMemorial"
+    },
+    {
+      "steps": [
+        "Open the embedded bbolt store",
+        "Load the requested MemorialMessage and VisitorSession",
+        "Load the linked CandleAnimation and DisplaySnapshot",
+        "Validate links and return deterministic display output"
+      ],
+      "test": "TestWorkflowQueryDisplay"
+    },
+    {
+      "steps": [
+        "Load the active candle bundle",
+        "Register a click and transition to expanding",
+        "Advance through stars while tracking particle layers",
+        "Persist and verify one quiet animation after completion"
+      ],
+      "test": "TestWorkflowInteractiveCandle"
+    },
+    {
+      "steps": [
+        "Persist message, session, animation, and snapshot",
+        "Close the store cleanly",
+        "Open the same database path again",
+        "Verify restored data and quiet-state invariants"
+      ],
+      "test": "TestPersistenceSurvivesReopen"
+    }
+  ]
+}
